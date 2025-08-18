@@ -1,0 +1,28 @@
+window.Bar {
+  background: transparent;
+  color: #a99982;
+  font-weight: normal;
+  font-family: "Liga SFMono Nerd Font";
+  font-size: 0.9em;
+  letter-spacing: 0.05rem;
+
+  > centerbox {
+    background: #131312;
+    border:0;
+    margin: 0;
+    padding: 0 0 0 20px;
+  }
+
+  button {
+    margin: 1px;
+    font-weight: normal;
+    background: transparent;
+  }
+
+  label.arch-logo {
+    color: #d20b0b;
+    font-size: 18px;
+    margin-right: 10px;
+    letter-spacing: 0.5px;
+  }
+}
