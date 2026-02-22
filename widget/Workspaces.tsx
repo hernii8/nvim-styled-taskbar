@@ -5,7 +5,11 @@ import { createPoll } from "ags/time";
 export default function Workspaces() {
   const workspaceIndicator = createPoll("", 100, async () => {
     const current = await execAsync(`bash -c "hyprctl activeworkspace -j | jq '.id'"`)
-    const total = await execAsync(`bash -c "hyprctl workspaces | grep '^workspace ID' | wc -l"`)
+    let total = await execAsync(`bash -c "hyprctl workspaces | grep '^workspace ID' | wc -l"`)
+
+    if (Number.parseInt(current) > Number.parseInt(total)) {
+      total = current
+    }
 
     return `${current.trim()}:${total.trim()}`
   })
