@@ -6,22 +6,23 @@ import { currentMode, setMode, resetCommandState } from "./windows/taskbar/modes
 
 app.start({
   css: style,
+  requestHandler(argv: string[], response: (r: string) => void) {
+    const [cmd] = argv;
+    if (cmd === "toggle-command") {
+      if (currentMode.get() === "normal") {
+        setMode("command");
+      } else {
+        setMode("normal");
+        resetCommandState();
+      }
+      return response("ok");
+    }
+    response("unknown command");
+  },
   main() {
     app.get_monitors().map((monitor) => {
       TaskBar(monitor);
       CommandPalette(monitor);
-    });
-
-    app.connect("request", (_a: object, request: string, res: (r: string) => void) => {
-      if (request === "toggle-command") {
-        if (currentMode.get() === "normal") {
-          setMode("command");
-        } else {
-          setMode("normal");
-          resetCommandState();
-        }
-        res("ok");
-      }
     });
   },
 });
