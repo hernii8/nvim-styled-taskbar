@@ -6,7 +6,7 @@ window.Bar {
   font-size: 0.9em;
   letter-spacing: 0.05rem;
 
-  > centerbox {
+  > box > centerbox {
     background: #131312;
     border: 0;
     margin: 0;
@@ -56,34 +56,28 @@ window.Bar {
     margin-left: 10px;
     letter-spacing: 0.08rem;
   }
-}
 
-window#command-palette {
-  background: transparent;
-
-  > * {
+  command-palette-dropdown {
     background: #1e1e2e;
-    border: 1px solid #313244;
-    border-top: none;
+    border-top: 1px solid #313244;
     padding: 4px 0;
-  }
 
-  command-list {
-    min-width: 480px;
+    command-list {
+      min-width: 600px;
+    }
   }
 
   button.list-item {
     background: transparent;
     border: none;
     border-radius: 0;
-    padding: 4px 12px;
+    padding: 5px 16px;
     margin: 0;
     color: #cdd6f4;
     font-family: "Liga SFMono Nerd Font";
     font-size: 0.9em;
 
-    &:hover,
-    &.selected {
+    &:hover {
       background: #313244;
     }
   }
@@ -99,7 +93,7 @@ window#command-palette {
   }
 
   item-hint {
-    color: #45475a;
-    font-size: 0.8em;
+    color: #cba6f7;
+    min-width: 14px;
   }
 }

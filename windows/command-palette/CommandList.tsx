@@ -8,7 +8,10 @@ import {
   setActiveCommand,
   setCommandQuery,
   setMode,
+  selectedIndex,
+  setSelectedIndex,
   resetCommandState,
+  registerExecuteHandler,
 } from "../taskbar/modes/modeSwitch";
 import { Command, SubItem } from "../../commands/registry";
 import appsCommand from "../../commands/apps";
@@ -38,37 +41,46 @@ function fuzzyFilterCommands(query: string): Command[] {
   );
 }
 
-async function fetchSubItems(cmdId: string | null, query: string): Promise<SubItem[]> {
-  if (!cmdId) return [];
-  const cmd = commands.find((c) => c.id === cmdId);
-  if (!cmd) return [];
-  const result = cmd.getItems(query);
-  return result instanceof Promise ? result : Promise.resolve(result);
+function fuzzyFilterSubItems(query: string, items: SubItem[]): SubItem[] {
+  if (!query) return items;
+  const q = query.toLowerCase();
+  return items.filter(
+    (i) =>
+      i.label.toLowerCase().includes(q) ||
+      (i.description ?? "").toLowerCase().includes(q),
+  );
 }
 
 export default function CommandList() {
-  const [subItems, setSubItems] = createState<SubItem[]>([]);
+  // allSubItems holds the full unfiltered list for the current command.
+  // Fetched explicitly when a command is selected.
+  const [allSubItems, setAllSubItems] = createState<SubItem[]>([]);
 
-  // Re-fetch sub-items whenever the active command, level, or query changes.
-  // createComputed is the correct AGS API for reactive side-effects with deps.
-  createComputed(
-    [commandLevel, commandQuery, activeCommand],
-    (level, query, cmdId) => {
-      if (level === "subpicker") {
-        fetchSubItems(cmdId, query).then(setSubItems);
-      } else {
-        setSubItems([]);
-      }
-      return level;
-    },
+  // Derived filtered lists — createComputed is used as intended here
+  // (returns a derived signal consumed by <For each={...}>).
+  const filteredCommands = createComputed(
+    [commandQuery],
+    (q) => fuzzyFilterCommands(q),
+  );
+
+  const filteredSubItems = createComputed(
+    [commandQuery, allSubItems],
+    (q, items) => fuzzyFilterSubItems(q, items),
   );
 
   function selectCommand(cmd: Command) {
-    // Set activeCommand first so createComputed above reads the correct id
-    // when commandLevel changes trigger it.
+    setAllSubItems([]);
+    setSelectedIndex(0);
     setActiveCommand(cmd.id);
     setCommandLevel("subpicker");
     setCommandQuery("");
+    // Explicit fetch — no reactive side-effect needed
+    const result = cmd.getItems("");
+    if (result instanceof Promise) {
+      result.then(setAllSubItems);
+    } else {
+      setAllSubItems(result);
+    }
   }
 
   function executeItem(item: SubItem) {
@@ -77,6 +89,19 @@ export default function CommandList() {
     resetCommandState();
   }
 
+  // Register Enter-key handler so CommandInput can trigger execution
+  // without importing this module directly.
+  registerExecuteHandler(() => {
+    const si = selectedIndex.get();
+    if (commandLevel.get() === "commands") {
+      const cmds = fuzzyFilterCommands(commandQuery.get());
+      if (si < cmds.length) selectCommand(cmds[si]);
+    } else {
+      const items = fuzzyFilterSubItems(commandQuery.get(), allSubItems.get());
+      if (si < items.length) executeItem(items[si]);
+    }
+  });
+
   return (
     <box orientation={Gtk.Orientation.VERTICAL} cssName="command-list">
 
@@ -84,23 +109,29 @@ export default function CommandList() {
         orientation={Gtk.Orientation.VERTICAL}
         visible={commandLevel((l) => l === "commands")}
       >
-        <For each={commandQuery((q) => fuzzyFilterCommands(q))}>
-          {(cmd) => (
-            <button class="list-item" onClicked={() => selectCommand(cmd)}>
-              <box spacing={8}>
-                <label label={cmd.icon} cssName="item-icon" />
-                <label label={cmd.name} xalign={0} />
-                <label
-                  label={cmd.description}
-                  cssName="item-desc"
-                  hexpand
-                  halign={Gtk.Align.END}
-                  xalign={1}
-                />
-                <label label="↵" cssName="item-hint" />
-              </box>
-            </button>
-          )}
+        <For each={filteredCommands}>
+          {(cmd, index) => {
+            const isSelected = createComputed(
+              [selectedIndex, index],
+              (si, i) => si === i,
+            );
+            return (
+              <button class="list-item" onClicked={() => selectCommand(cmd)}>
+                <box spacing={8}>
+                  <label label={isSelected((v) => (v ? "▶" : " "))} cssName="item-hint" />
+                  <label label={cmd.icon} cssName="item-icon" />
+                  <label label={cmd.name} xalign={0} />
+                  <label
+                    label={cmd.description}
+                    cssName="item-desc"
+                    hexpand
+                    halign={Gtk.Align.END}
+                    xalign={1}
+                  />
+                </box>
+              </button>
+            );
+          }}
         </For>
       </box>
 
@@ -108,26 +139,33 @@ export default function CommandList() {
         orientation={Gtk.Orientation.VERTICAL}
         visible={commandLevel((l) => l === "subpicker")}
       >
-        <For each={subItems}>
-          {(item) => (
-            <button class="list-item" onClicked={() => executeItem(item)}>
-              <box spacing={8}>
-                <label label={item.icon} cssName="item-icon" />
-                <label label={item.label} xalign={0} />
-                <label
-                  label={item.description ?? ""}
-                  cssName="item-desc"
-                  hexpand
-                  halign={Gtk.Align.END}
-                  xalign={1}
-                />
-              </box>
-            </button>
-          )}
+        <For each={filteredSubItems}>
+          {(item, index) => {
+            const isSelected = createComputed(
+              [selectedIndex, index],
+              (si, i) => si === i,
+            );
+            return (
+              <button class="list-item" onClicked={() => executeItem(item)}>
+                <box spacing={8}>
+                  <label label={isSelected((v) => (v ? "▶" : " "))} cssName="item-hint" />
+                  <label label={item.icon} cssName="item-icon" />
+                  <label label={item.label} xalign={0} />
+                  <label
+                    label={item.description ?? ""}
+                    cssName="item-desc"
+                    hexpand
+                    halign={Gtk.Align.END}
+                    xalign={1}
+                  />
+                </box>
+              </button>
+            );
+          }}
         </For>
         <label
-          visible={subItems((i) => i.length === 0)}
-          label="No results"
+          visible={filteredSubItems((i) => i.length === 0)}
+          label="loading..."
           cssName="item-desc"
           halign={Gtk.Align.CENTER}
         />
