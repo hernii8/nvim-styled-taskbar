@@ -8,7 +8,7 @@ window.Bar {
 
   > centerbox {
     background: #131312;
-    border:0;
+    border: 0;
     margin: 0;
     padding: 0 0 0 20px;
   }
@@ -24,5 +24,86 @@ window.Bar {
     font-size: 18px;
     margin-right: 10px;
     letter-spacing: 0.5px;
+  }
+
+  vim-mode-label {
+    color: #a6e3a1;
+    font-weight: bold;
+    font-size: 0.8em;
+    margin-right: 4px;
+    letter-spacing: 0.08rem;
+  }
+
+  command-prefix {
+    color: #89b4fa;
+    font-weight: bold;
+    margin-right: 2px;
+  }
+
+  command-entry {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: #cdd6f4;
+    min-width: 220px;
+    padding: 0 4px;
+  }
+
+  mode-indicator {
+    color: #a6e3a1;
+    font-weight: bold;
+    font-size: 0.8em;
+    margin-left: 10px;
+    letter-spacing: 0.08rem;
+  }
+}
+
+window#command-palette {
+  background: transparent;
+
+  > * {
+    background: #1e1e2e;
+    border: 1px solid #313244;
+    border-top: none;
+    padding: 4px 0;
+  }
+
+  .command-list {
+    min-width: 480px;
+  }
+
+  button.list-item {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 4px 12px;
+    margin: 0;
+    color: #cdd6f4;
+    font-family: "Liga SFMono Nerd Font";
+    font-size: 0.9em;
+
+    &:hover,
+    &.selected {
+      background: #313244;
+    }
+
+    > box {
+      spacing: 8px;
+    }
+  }
+
+  item-icon {
+    min-width: 22px;
+    color: #89b4fa;
+  }
+
+  item-desc {
+    color: #6c7086;
+    font-size: 0.85em;
+  }
+
+  item-hint {
+    color: #45475a;
+    font-size: 0.8em;
   }
 }

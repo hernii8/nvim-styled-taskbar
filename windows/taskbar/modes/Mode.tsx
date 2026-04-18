@@ -1,11 +1,11 @@
-import { createComputed, With } from "ags"
-import CommandMode from "./CommandMode"
-import NormalMode from "./NormalMode"
-import { modeSwitch } from "./modeSwitch"
+import NormalMode from "./NormalMode";
+import CommandInput from "./CommandInput";
 
 export default function Mode() {
-	return (<box>
-		<NormalMode />
-		<CommandMode />
-	</box>)
+  return (
+    <box>
+      <NormalMode />
+      <CommandInput />
+    </box>
+  );
 }
