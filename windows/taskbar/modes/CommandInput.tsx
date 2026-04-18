@@ -1,3 +1,4 @@
+import GLib from "gi://GLib";
 import { Gtk, Gdk } from "ags/gtk4";
 import {
   currentMode,
@@ -18,6 +19,13 @@ export default function CommandInput() {
   return (
     <box
       visible={currentMode((v) => v === "command")}
+      onMap={() => {
+        GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+          entryRef?.set_text("");
+          entryRef?.grab_focus();
+          return GLib.SOURCE_REMOVE;
+        });
+      }}
       spacing={4}
       valign={Gtk.Align.CENTER}
     >

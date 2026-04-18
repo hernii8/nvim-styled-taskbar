@@ -11,6 +11,7 @@ import Date from "../../widget/Date";
 import Bluetooth from "../../widget/bluetooth/Bluetooth";
 import SliderWidget from "../../widget/SliderWidget";
 import Mode from "./modes/Mode";
+import CommandList from "../command-palette/CommandList";
 import {
   currentMode,
   sliderTarget,
@@ -70,7 +71,7 @@ export default function TaskBar(gdkmonitor: Gdk.Monitor) {
 
   return (
     <window
-      keymode={keymode}
+      keymode={keymode((v) => v)}
       visible
       name="bar"
       class="Bar"
@@ -153,6 +154,13 @@ export default function TaskBar(gdkmonitor: Gdk.Monitor) {
             <SliderWidget />
           </box>
         </centerbox>
+
+        <box
+          visible={currentMode((v) => v === "command")}
+          cssName="command-palette-dropdown"
+        >
+          <CommandList />
+        </box>
       </box>
     </window>
   );
