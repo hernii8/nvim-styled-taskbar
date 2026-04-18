@@ -12,14 +12,15 @@ app.start({
       CommandPalette(monitor);
     });
 
-    app.connect("message", (_a: object, msg: string) => {
-      if (msg === "toggle-command") {
+    app.connect("request", (_a: object, request: string, res: (r: string) => void) => {
+      if (request === "toggle-command") {
         if (currentMode.get() === "normal") {
           setMode("command");
         } else {
           setMode("normal");
           resetCommandState();
         }
+        res("ok");
       }
     });
   },
