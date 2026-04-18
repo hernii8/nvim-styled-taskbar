@@ -1,6 +1,4 @@
-import { createComputed } from "ags";
 import { Gtk, Gdk } from "ags/gtk4";
-import GLib from "gi://GLib";
 import {
   currentMode,
   setMode,
@@ -16,19 +14,6 @@ import {
 
 export default function CommandInput() {
   let entryRef: Gtk.Entry | null = null;
-
-  // Defer grab_focus via GLib.idle_add so the widget is fully visible before
-  // we try to focus it. Fires whenever mode or level changes.
-  createComputed([currentMode, commandLevel], (mode) => {
-    if (mode === "command" && entryRef) {
-      GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-        entryRef?.set_text("");
-        entryRef?.grab_focus();
-        return GLib.SOURCE_REMOVE;
-      });
-    }
-    return mode;
-  });
 
   return (
     <box

@@ -2,33 +2,17 @@ import { exec, execAsync } from "ags/process";
 import GLib from "gi://GLib";
 import { Command, SubItem } from "./registry";
 
-function parseXdgBookmarks(): string[] {
-  try {
-    const home = GLib.get_home_dir();
-    const raw = exec(`cat ${home}/.config/gtk-3.0/bookmarks`);
-    return raw
-      .split("\n")
-      .filter((line) => line.startsWith("file://"))
-      .map((line) => {
-        const url = line.split(" ")[0];
-        return decodeURIComponent(url.replace("file://", ""));
-      });
-  } catch {
-    return [];
-  }
-}
-
-function findRecentDirs(): string[] {
-  try {
-    const home = GLib.get_home_dir();
-    // Find directories up to depth 3, sorted by modification time
-    const out = exec(
-      `find ${home} -maxdepth 3 -type d -not -path '*/.*' 2>/dev/null | head -100`
-    );
-    return out.split("\n").filter(Boolean);
-  } catch {
-    return [];
-  }
+function getXdgDirs(): string[] {
+  const keys = [
+    GLib.UserDirectory.DIRECTORY_HOME,
+    GLib.UserDirectory.DIRECTORY_DOCUMENTS,
+    GLib.UserDirectory.DIRECTORY_DOWNLOADS,
+    GLib.UserDirectory.DIRECTORY_MUSIC,
+    GLib.UserDirectory.DIRECTORY_PICTURES,
+    GLib.UserDirectory.DIRECTORY_VIDEOS,
+    GLib.UserDirectory.DIRECTORY_DESKTOP,
+  ];
+  return keys.map((k) => GLib.get_user_special_dir(k)).filter(Boolean) as string[];
 }
 
 function fuzzyMatch(query: string, text: string): boolean {
@@ -60,14 +44,20 @@ const directoriesCommand: Command = {
   name: "Directories",
   icon: "󰉋",
   description: "Open a directory in terminal",
-  getItems(query: string): SubItem[] {
-    const bookmarks = parseXdgBookmarks();
-    const recent = findRecentDirs();
+  async getItems(query: string): Promise<SubItem[]> {
+    const xdg = getXdgDirs();
+    let bookmarks: string[] = [];
+    try {
+      const raw = await execAsync(`cat ${GLib.get_home_dir()}/.config/gtk-3.0/bookmarks`);
+      bookmarks = raw
+        .split("\n")
+        .filter((l) => l.startsWith("file://"))
+        .map((l) => decodeURIComponent(l.split(" ")[0].replace("file://", "")));
+    } catch {}
 
-    // Merge, bookmarks first, dedup
     const seen = new Set<string>();
     const all: string[] = [];
-    for (const d of [...bookmarks, ...recent]) {
+    for (const d of [...bookmarks, ...xdg]) {
       if (!seen.has(d)) {
         seen.add(d);
         all.push(d);
@@ -84,7 +74,6 @@ const directoriesCommand: Command = {
       description: dir,
       action: () => {
         execAsync(`${terminal} --working-directory "${dir}"`).catch(() => {
-          // fallback for terminals that use -d instead
           execAsync(`${terminal} -d "${dir}"`).catch(() => {});
         });
       },

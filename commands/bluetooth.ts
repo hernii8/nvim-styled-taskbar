@@ -1,10 +1,9 @@
-import { exec, execAsync } from "ags/process";
+import { execAsync } from "ags/process";
 import { Command, SubItem } from "./registry";
 
 interface BtDevice {
   mac: string
   name: string
-  connected: boolean
 }
 
 function parseDevices(output: string): BtDevice[] {
@@ -15,19 +14,8 @@ function parseDevices(output: string): BtDevice[] {
       const parts = line.split(" ");
       const mac = parts[1];
       const name = parts.slice(2).join(" ");
-      return { mac, name, connected: false };
+      return { mac, name };
     });
-}
-
-function getConnectedMacs(): string[] {
-  try {
-    const info = exec("bluetoothctl info");
-    const macMatch = info.match(/Device ([A-Fa-f0-9:]{17})/);
-    if (macMatch) return [macMatch[1]];
-  } catch {
-    // no connected device
-  }
-  return [];
 }
 
 function fuzzyMatch(query: string, text: string): boolean {
@@ -44,14 +32,17 @@ const bluetoothCommand: Command = {
   async getItems(query: string): Promise<SubItem[]> {
     let output = "";
     try {
-      output = exec("bluetoothctl devices Paired");
+      output = await execAsync("bluetoothctl devices Paired");
     } catch {
       return [{ id: "error", label: "bluetoothctl not available", icon: "󰂱", action: () => {} }];
     }
-    const connected = getConnectedMacs();
+    let connectedInfo = "";
+    try { connectedInfo = await execAsync("bluetoothctl info"); } catch {}
+    const connectedMac = connectedInfo.match(/Device ([A-Fa-f0-9:]{17})/)?.[1] ?? null;
+
     const devices = parseDevices(output).filter((d) => fuzzyMatch(query, d.name));
     return devices.map((d) => {
-      const isConnected = connected.includes(d.mac);
+      const isConnected = d.mac === connectedMac;
       return {
         id: d.mac,
         label: d.name,

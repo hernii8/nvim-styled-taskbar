@@ -1,6 +1,7 @@
 import app from "ags/gtk4/app";
 import style from "./style.scss";
 import TaskBar from "./windows/taskbar/TaskBar";
+import CommandPalette from "./windows/command-palette/CommandPalette";
 import { currentMode, setMode, resetCommandState } from "./windows/taskbar/modes/modeSwitch";
 
 app.start({
@@ -20,5 +21,6 @@ app.start({
   },
   main() {
     app.get_monitors().map(TaskBar);
+    app.get_monitors().map(CommandPalette);
   },
 });

@@ -17,16 +17,12 @@ import { Command, SubItem } from "../../commands/registry";
 import appsCommand from "../../commands/apps";
 import bluetoothCommand from "../../commands/bluetooth";
 import wifiCommand from "../../commands/wifi";
-import volumeCommand from "../../commands/volume";
-import brightnessCommand from "../../commands/brightness";
 import directoriesCommand from "../../commands/directories";
 
 const commands: Command[] = [
   appsCommand,
   bluetoothCommand,
   wifiCommand,
-  volumeCommand,
-  brightnessCommand,
   directoriesCommand,
 ];
 

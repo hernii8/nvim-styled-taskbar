@@ -57,14 +57,35 @@ window.Bar {
     letter-spacing: 0.08rem;
   }
 
-  command-palette-dropdown {
-    background: #1e1e2e;
-    border-top: 1px solid #313244;
-    padding: 4px 0;
+  button.vol-btn {
+    background: transparent;
+    border: none;
+    color: #89b4fa;
+    font-size: 0.85em;
+    padding: 0 4px;
+    margin: 1px;
 
-    command-list {
-      min-width: 600px;
+    &:hover {
+      color: #cdd6f4;
     }
+  }
+
+  slider-icon {
+    color: #89b4fa;
+    min-width: 20px;
+  }
+
+  slider-name {
+    color: #cba6f7;
+    font-weight: bold;
+    font-size: 0.8em;
+    letter-spacing: 0.08rem;
+    min-width: 28px;
+  }
+
+  slider-bar {
+    color: #a6e3a1;
+    font-family: "Liga SFMono Nerd Font";
   }
 
   button.list-item {
@@ -95,5 +116,15 @@ window.Bar {
   item-hint {
     color: #cba6f7;
     min-width: 14px;
+  }
+}
+
+window.CommandPalette {
+  background: #1e1e2e;
+  border-top: 1px solid #313244;
+  padding: 4px 0;
+
+  command-list {
+    min-width: 600px;
   }
 }
