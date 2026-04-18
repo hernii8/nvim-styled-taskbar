@@ -1,3 +1,4 @@
+import { createComputed } from "ags";
 import { Gtk, Gdk } from "ags/gtk4";
 import {
   currentMode,
@@ -12,34 +13,15 @@ import {
 export default function CommandInput() {
   let entryRef: Gtk.Entry | null = null;
 
-  // Grab focus and clear the entry whenever command mode activates
-  currentMode((mode) => {
+  // Clear and focus the entry whenever command mode activates OR when returning
+  // from a sub-picker back to the command list (commandLevel dep handles that).
+  createComputed([currentMode, commandLevel], (mode) => {
     if (mode === "command" && entryRef) {
       entryRef.set_text("");
       entryRef.grab_focus();
     }
+    return mode;
   });
-
-  // Update prefix label when drilling into a sub-picker
-  function onKeyPressed(
-    _e: Gtk.EventControllerKey,
-    keyval: number,
-    _keycode: number,
-    _mod: Gdk.ModifierType,
-  ) {
-    if (keyval === Gdk.KEY_Escape) {
-      if (commandLevel.get() === "subpicker") {
-        setCommandLevel("commands");
-        setCommandQuery("");
-        setActiveCommand(null);
-      } else {
-        setMode("normal");
-        resetCommandState();
-      }
-      return true;
-    }
-    return false;
-  }
 
   return (
     <box
@@ -52,11 +34,34 @@ export default function CommandInput() {
         cssName="command-prefix"
       />
       <entry
-        setup={(self) => { entryRef = self; }}
+        onRealize={(self: Gtk.Entry) => {
+          entryRef = self;
+
+          // GTK4 key events require an EventControllerKey — there is no onKeyPressed
+          // prop directly on GtkEntry in GTK4.
+          const ctrl = new Gtk.EventControllerKey();
+          ctrl.connect(
+            "key-pressed",
+            (_c: Gtk.EventControllerKey, keyval: number): boolean => {
+              if (keyval === Gdk.KEY_Escape) {
+                if (commandLevel.get() === "subpicker") {
+                  setCommandLevel("commands");
+                  setCommandQuery("");
+                  setActiveCommand(null);
+                } else {
+                  setMode("normal");
+                  resetCommandState();
+                }
+                return true;
+              }
+              return false;
+            },
+          );
+          self.add_controller(ctrl);
+        }}
         cssName="command-entry"
         placeholderText="type command..."
         onNotifyText={({ text }) => setCommandQuery(text)}
-        onKeyPressed={onKeyPressed}
       />
       <label label="-- COMMAND --" cssName="mode-indicator" />
     </box>

@@ -1,4 +1,4 @@
-import { createState, For } from "ags";
+import { createState, createComputed, For } from "ags";
 import { Gtk } from "ags/gtk4";
 import {
   commandQuery,
@@ -39,6 +39,7 @@ function fuzzyFilterCommands(query: string): Command[] {
 }
 
 async function fetchSubItems(cmdId: string | null, query: string): Promise<SubItem[]> {
+  if (!cmdId) return [];
   const cmd = commands.find((c) => c.id === cmdId);
   if (!cmd) return [];
   const result = cmd.getItems(query);
@@ -48,29 +49,26 @@ async function fetchSubItems(cmdId: string | null, query: string): Promise<SubIt
 export default function CommandList() {
   const [subItems, setSubItems] = createState<SubItem[]>([]);
 
-  // When the level becomes "subpicker", load items for the selected command.
-  // Re-fetch whenever the query changes at subpicker level.
-  // We subscribe imperatively via the signal callback form.
-  commandLevel((level) => {
-    if (level === "subpicker") {
-      fetchSubItems(activeCommand.get(), commandQuery.get()).then(setSubItems);
-    } else {
-      setSubItems([]);
-    }
-  });
-
-  commandQuery((query) => {
-    if (commandLevel.get() === "subpicker") {
-      fetchSubItems(activeCommand.get(), query).then(setSubItems);
-    }
-  });
+  // Re-fetch sub-items whenever the active command, level, or query changes.
+  // createComputed is the correct AGS API for reactive side-effects with deps.
+  createComputed(
+    [commandLevel, commandQuery, activeCommand],
+    (level, query, cmdId) => {
+      if (level === "subpicker") {
+        fetchSubItems(cmdId, query).then(setSubItems);
+      } else {
+        setSubItems([]);
+      }
+      return level;
+    },
+  );
 
   function selectCommand(cmd: Command) {
+    // Set activeCommand first so createComputed above reads the correct id
+    // when commandLevel changes trigger it.
     setActiveCommand(cmd.id);
     setCommandLevel("subpicker");
     setCommandQuery("");
-    setSubItems([]);
-    fetchSubItems(cmd.id, "").then(setSubItems);
   }
 
   function executeItem(item: SubItem) {
@@ -82,17 +80,13 @@ export default function CommandList() {
   return (
     <box orientation={Gtk.Orientation.VERTICAL} cssName="command-list">
 
-      {/* Level 1: command categories */}
       <box
         orientation={Gtk.Orientation.VERTICAL}
         visible={commandLevel((l) => l === "commands")}
       >
         <For each={commandQuery((q) => fuzzyFilterCommands(q))}>
           {(cmd) => (
-            <button
-              class="list-item"
-              onClicked={() => selectCommand(cmd)}
-            >
+            <button class="list-item" onClicked={() => selectCommand(cmd)}>
               <box spacing={8}>
                 <label label={cmd.icon} cssName="item-icon" />
                 <label label={cmd.name} xalign={0} />
@@ -110,17 +104,13 @@ export default function CommandList() {
         </For>
       </box>
 
-      {/* Level 2: sub-items */}
       <box
         orientation={Gtk.Orientation.VERTICAL}
         visible={commandLevel((l) => l === "subpicker")}
       >
         <For each={subItems}>
           {(item) => (
-            <button
-              class="list-item"
-              onClicked={() => executeItem(item)}
-            >
+            <button class="list-item" onClicked={() => executeItem(item)}>
               <box spacing={8}>
                 <label label={item.icon} cssName="item-icon" />
                 <label label={item.label} xalign={0} />

@@ -68,7 +68,7 @@ window#command-palette {
     padding: 4px 0;
   }
 
-  .command-list {
+  command-list {
     min-width: 480px;
   }
 
@@ -85,10 +85,6 @@ window#command-palette {
     &:hover,
     &.selected {
       background: #313244;
-    }
-
-    > box {
-      spacing: 8px;
     }
   }
 

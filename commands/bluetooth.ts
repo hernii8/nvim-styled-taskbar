@@ -22,7 +22,7 @@ function parseDevices(output: string): BtDevice[] {
 function getConnectedMacs(): string[] {
   try {
     const info = exec("bluetoothctl info");
-    const macMatch = info.match(/Device ([A-F0-9:]{17})/);
+    const macMatch = info.match(/Device ([A-Fa-f0-9:]{17})/);
     if (macMatch) return [macMatch[1]];
   } catch {
     // no connected device
