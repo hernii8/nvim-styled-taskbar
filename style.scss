@@ -1,3 +1,34 @@
+/* Shared list-item styles used by both Bar inline list and CommandPalette window */
+button.list-item {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 5px 16px;
+  margin: 0;
+  color: #cdd6f4;
+  font-family: "Liga SFMono Nerd Font";
+  font-size: 0.9em;
+
+  &:hover {
+    background: #313244;
+  }
+}
+
+item-icon {
+  min-width: 22px;
+  color: #89b4fa;
+}
+
+item-desc {
+  color: #6c7086;
+  font-size: 0.85em;
+}
+
+item-hint {
+  color: #cba6f7;
+  min-width: 14px;
+}
+
 window.Bar {
   background: transparent;
   color: #a99982;
@@ -57,46 +88,6 @@ window.Bar {
     letter-spacing: 0.08rem;
   }
 
-  command-palette-dropdown {
-    background: #1e1e2e;
-    border-top: 1px solid #313244;
-    padding: 4px 0;
-
-    command-list {
-      min-width: 600px;
-    }
-  }
-
-  button.list-item {
-    background: transparent;
-    border: none;
-    border-radius: 0;
-    padding: 5px 16px;
-    margin: 0;
-    color: #cdd6f4;
-    font-family: "Liga SFMono Nerd Font";
-    font-size: 0.9em;
-
-    &:hover {
-      background: #313244;
-    }
-  }
-
-  item-icon {
-    min-width: 22px;
-    color: #89b4fa;
-  }
-
-  item-desc {
-    color: #6c7086;
-    font-size: 0.85em;
-  }
-
-  item-hint {
-    color: #cba6f7;
-    min-width: 14px;
-  }
-
   button.vol-btn {
     background: transparent;
     border: none;
@@ -126,5 +117,18 @@ window.Bar {
   slider-bar {
     color: #a6e3a1;
     font-family: "Liga SFMono Nerd Font";
+  }
+}
+
+window.CommandPalette {
+  background: #1e1e2e;
+  border-top: 1px solid #313244;
+  color: #cdd6f4;
+  font-family: "Liga SFMono Nerd Font";
+  font-size: 0.9em;
+
+  command-list {
+    min-width: 600px;
+    padding: 4px 0;
   }
 }
