@@ -12,8 +12,8 @@ export default function CommandPalette(gdkmonitor: Gdk.Monitor) {
       visible={currentMode((v) => v === "command")}
       gdkmonitor={gdkmonitor}
       anchor={TOP | LEFT | RIGHT}
-      exclusivity={Astal.Exclusivity.NORMAL}
-      layer={Astal.Layer.TOP}
+      exclusivity={Astal.Exclusivity.IGNORE}
+      layer={Astal.Layer.OVERLAY}
       marginTop={30}
       application={app}
     >

@@ -4,9 +4,7 @@ import { Command, SubItem } from "./registry";
 
 function getXdgDirs(): string[] {
   const keys = [
-    GLib.UserDirectory.DIRECTORY_HOME,
     GLib.UserDirectory.DIRECTORY_DOCUMENTS,
-    GLib.UserDirectory.DIRECTORY_DOWNLOADS,
     GLib.UserDirectory.DIRECTORY_MUSIC,
     GLib.UserDirectory.DIRECTORY_PICTURES,
     GLib.UserDirectory.DIRECTORY_VIDEOS,
@@ -27,7 +25,7 @@ function fuzzyMatch(query: string, text: string): boolean {
 }
 
 function detectTerminal(): string {
-  const candidates = ["kitty", "foot", "alacritty", "wezterm", "gnome-terminal", "xterm"];
+  const candidates = ["kitty", "foot", "alacritty", "wezterm", "gnome-terminal", "xterm", "ghostty"];
   for (const term of candidates) {
     try {
       exec(`which ${term}`);
@@ -53,7 +51,7 @@ const directoriesCommand: Command = {
         .split("\n")
         .filter((l) => l.startsWith("file://"))
         .map((l) => decodeURIComponent(l.split(" ")[0].replace("file://", "")));
-    } catch {}
+    } catch { }
 
     const seen = new Set<string>();
     const all: string[] = [];
@@ -74,7 +72,7 @@ const directoriesCommand: Command = {
       description: dir,
       action: () => {
         execAsync(`${terminal} --working-directory "${dir}"`).catch(() => {
-          execAsync(`${terminal} -d "${dir}"`).catch(() => {});
+          execAsync(`${terminal} -d "${dir}"`).catch(() => { });
         });
       },
     }));

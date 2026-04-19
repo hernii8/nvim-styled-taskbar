@@ -19,6 +19,7 @@ import {
   sliderValue,
   setSliderValue,
 } from "./modes/modeSwitch";
+import CommandPalette from "../command-palette/CommandPalette";
 
 const [volValue, setVolValue] = createState(50);
 const [briValue, setBriValue] = createState(50);
@@ -28,7 +29,7 @@ async function refreshVol(): Promise<void> {
     const out = await execAsync("wpctl get-volume @DEFAULT_AUDIO_SINK@");
     const m = out.match(/(\d+\.?\d*)/);
     if (m) setVolValue(Math.round(parseFloat(m[1]) * 100));
-  } catch {}
+  } catch { }
 }
 
 async function refreshBri(): Promise<void> {
@@ -37,16 +38,16 @@ async function refreshBri(): Promise<void> {
     const max = await execAsync("brightnessctl max");
     const pct = Math.round((parseInt(current.trim()) / parseInt(max.trim())) * 100);
     if (!isNaN(pct)) setBriValue(pct);
-  } catch {}
+  } catch { }
 }
 
 function adjustSlider(delta: number) {
   const v = Math.max(0, Math.min(100, sliderValue.get() + delta));
   setSliderValue(v);
   if (sliderTarget.get() === "volume") {
-    execAsync(`wpctl set-volume @DEFAULT_AUDIO_SINK@ ${v}%`).catch(() => {});
+    execAsync(`wpctl set-volume @DEFAULT_AUDIO_SINK@ ${v}%`).catch(() => { });
   } else {
-    execAsync(`brightnessctl set ${v}%`).catch(() => {});
+    execAsync(`brightnessctl set ${v}%`).catch(() => { });
   }
 }
 
@@ -154,14 +155,8 @@ export default function TaskBar(gdkmonitor: Gdk.Monitor) {
             <SliderWidget />
           </box>
         </centerbox>
-
-        <box
-          visible={currentMode((v) => v === "command")}
-          cssName="command-palette-dropdown"
-        >
-          <CommandList />
-        </box>
       </box>
     </window>
+
   );
 }

@@ -3,7 +3,7 @@ import Logo from "../../../widget/Logo";
 import { modeSwitch } from "./modeSwitch";
 
 export default function NormalMode() {
-  return <box visible={modeSwitch((v) => v === "normal")}>
+  return <box>
     <Logo />
     <ActiveWindow />
   </box>

@@ -85,15 +85,13 @@ export default function CommandList() {
     resetCommandState();
   }
 
-  // Register Enter-key handler so CommandInput can trigger execution
-  // without importing this module directly.
   registerExecuteHandler(() => {
-    const si = selectedIndex.get();
-    if (commandLevel.get() === "commands") {
-      const cmds = fuzzyFilterCommands(commandQuery.get());
+    const si = selectedIndex.peek();
+    if (commandLevel.peek() === "commands") {
+      const cmds = fuzzyFilterCommands(commandQuery.peek());
       if (si < cmds.length) selectCommand(cmds[si]);
     } else {
-      const items = fuzzyFilterSubItems(commandQuery.get(), allSubItems.get());
+      const items = fuzzyFilterSubItems(commandQuery.peek(), allSubItems.peek());
       if (si < items.length) executeItem(items[si]);
     }
   });

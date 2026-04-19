@@ -13,12 +13,11 @@ import {
   executeSelected,
 } from "./modeSwitch";
 
-export default function CommandInput() {
+export default function CommandMode() {
   let entryRef: Gtk.Entry | null = null;
 
   return (
     <box
-      visible={currentMode((v) => v === "command")}
       onMap={() => {
         GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
           entryRef?.set_text("");
@@ -37,12 +36,12 @@ export default function CommandInput() {
         onRealize={(self: Gtk.Entry) => {
           entryRef = self;
 
-          const ctrl = new Gtk.EventControllerKey();
-          ctrl.connect(
+          const keyCtrl = new Gtk.EventControllerKey();
+          keyCtrl.connect(
             "key-pressed",
-            (_c: Gtk.EventControllerKey, keyval: number): boolean => {
+            (_c, keyval) => {
               if (keyval === Gdk.KEY_Escape) {
-                if (commandLevel.get() === "subpicker") {
+                if (commandLevel.peek() === "subpicker") {
                   setCommandLevel("commands");
                   setCommandQuery("");
                   setActiveCommand(null);
@@ -53,31 +52,45 @@ export default function CommandInput() {
                 }
                 return true;
               }
-              if (keyval === Gdk.KEY_Up) {
-                setSelectedIndex(Math.max(0, selectedIndex.get() - 1));
+
+              if (keyval === Gdk.KEY_ISO_Left_Tab) {
+                let nextIndex = selectedIndex.peek() - 1
+                if (nextIndex < 0) nextIndex = 3;
+                setSelectedIndex(nextIndex);
                 return true;
               }
-              if (keyval === Gdk.KEY_Down) {
-                setSelectedIndex(selectedIndex.get() + 1);
+
+              if (keyval === Gdk.KEY_Tab) {
+                let nextIndex = selectedIndex.peek() + 1
+                if (nextIndex > 3) nextIndex = 0;
+                setSelectedIndex(nextIndex);
                 return true;
               }
-              if (keyval === Gdk.KEY_Return) {
-                executeSelected();
-                return true;
-              }
+
               return false;
             },
           );
-          self.add_controller(ctrl);
+          self.add_controller(keyCtrl);
+          self.connect("activate", () => {
+            executeSelected();
+          });
+
+          const focusCtrl = new Gtk.EventControllerFocus();
+
+          focusCtrl.connect("leave", () => {
+            setMode("normal");
+            resetCommandState();
+          });
+
+          self.add_controller(focusCtrl);
         }}
         cssName="command-entry"
         placeholderText="type command..."
         onNotifyText={({ text }) => {
           setCommandQuery(text);
-          setSelectedIndex(0); // reset cursor when query changes
+          setSelectedIndex(0);
         }}
       />
-      <label label="-- COMMAND --" cssName="mode-indicator" />
     </box>
   );
 }
