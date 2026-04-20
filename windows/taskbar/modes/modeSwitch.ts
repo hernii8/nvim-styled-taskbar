@@ -8,7 +8,6 @@ export const [selectedIndex, setSelectedIndex] = createState(0);
 
 export type SliderTarget = "none" | "volume" | "brightness";
 export const [sliderTarget, setSliderTarget] = createState<SliderTarget>("none");
-export const [sliderValue, setSliderValue] = createState(0);
 
 // Backward-compat alias used by NormalMode.tsx
 export const modeSwitch = currentMode;

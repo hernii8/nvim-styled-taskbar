@@ -1,4 +1,3 @@
-/* Shared list-item styles used by both Bar inline list and CommandPalette window */
 button.list-item {
   background: transparent;
   border: none;
@@ -39,6 +38,7 @@ window.Bar {
 
   > box > centerbox {
     background: #131312;
+    min-height: 30px;
     border: 0;
     margin: 0;
     padding: 0 0 0 20px;

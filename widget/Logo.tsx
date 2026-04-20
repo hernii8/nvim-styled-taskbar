@@ -1,5 +1,9 @@
+import { currentMode } from "../windows/taskbar/modes/modeSwitch";
+
 export default function Logo() {
-  const LOGO_GLYPH = ""
-  return <label class="arch-logo" label={LOGO_GLYPH} />
+  return <label
+    label={currentMode((v) => (v === "normal" ? "N" : "C"))}
+    cssName="vim-mode-label"
+  />
 }
 

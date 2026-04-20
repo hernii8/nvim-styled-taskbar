@@ -1,8 +1,9 @@
 import app from "ags/gtk4/app";
 import style from "./style.scss";
 import TaskBar from "./windows/taskbar/TaskBar";
-import { currentMode, setMode, resetCommandState } from "./windows/taskbar/modes/modeSwitch";
+import { currentMode, setMode, resetCommandState, setSliderTarget } from "./windows/taskbar/modes/modeSwitch";
 import CommandPalette from "./windows/command-palette/CommandPalette";
+import { adjustSlider } from "./widget/SliderWidget";
 
 app.start({
   css: style,
@@ -18,16 +19,20 @@ app.start({
       return response("ok");
     }
     if (cmd === "brightness-up") {
-      setMode("command")
+      setSliderTarget("brightness")
+      adjustSlider(1)
     }
     if (cmd === "brightness-down") {
-      setMode("command")
+      setSliderTarget("brightness")
+      adjustSlider(-1)
     }
     if (cmd === "volume-up") {
-      setMode("command")
+      setSliderTarget("volume")
+      adjustSlider(1)
     }
     if (cmd === "volume-down") {
-      setMode("command")
+      setSliderTarget("volume")
+      adjustSlider(-1)
     }
     response("unknown command");
   },

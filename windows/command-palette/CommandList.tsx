@@ -4,7 +4,6 @@ import {
   commandQuery,
   commandLevel,
   setCommandLevel,
-  activeCommand,
   setActiveCommand,
   setCommandQuery,
   setMode,
