@@ -4,40 +4,40 @@ button.list-item {
   border-radius: 0;
   padding: 5px 16px;
   margin: 0;
-  color: #cdd6f4;
+  color: #ebdbb2;
   font-family: "Liga SFMono Nerd Font";
   font-size: 0.9em;
 
   &:hover {
-    background: #313244;
+    background: #3c3836;
   }
 }
 
 item-icon {
   min-width: 22px;
-  color: #89b4fa;
+  color: #83a598;
 }
 
 item-desc {
-  color: #6c7086;
+  color: #928374;
   font-size: 0.85em;
 }
 
 item-hint {
-  color: #cba6f7;
+  color: #d3869b;
   min-width: 14px;
 }
 
 window.Bar {
   background: transparent;
-  color: #a99982;
+  color: #a89984;
   font-weight: normal;
   font-family: "Liga SFMono Nerd Font";
   font-size: 0.9em;
   letter-spacing: 0.05rem;
 
   > box > centerbox {
-    background: #131312;
+    background: #1d2021;
     min-height: 30px;
     border: 0;
     margin: 0;
@@ -51,14 +51,14 @@ window.Bar {
   }
 
   label.arch-logo {
-    color: #d20b0b;
+    color: #fb4934;
     font-size: 18px;
     margin-right: 10px;
     letter-spacing: 0.5px;
   }
 
   vim-mode-label {
-    color: #a6e3a1;
+    color: #b8bb26;
     font-weight: bold;
     font-size: 0.8em;
     margin-right: 4px;
@@ -66,7 +66,7 @@ window.Bar {
   }
 
   command-prefix {
-    color: #89b4fa;
+    color: #fabd2f;
     font-weight: bold;
     margin-right: 2px;
   }
@@ -75,13 +75,13 @@ window.Bar {
     background: transparent;
     border: none;
     box-shadow: none;
-    color: #cdd6f4;
+    color: #ebdbb2;
     min-width: 220px;
     padding: 0 4px;
   }
 
   mode-indicator {
-    color: #a6e3a1;
+    color: #b8bb26;
     font-weight: bold;
     font-size: 0.8em;
     margin-left: 10px;
@@ -91,23 +91,23 @@ window.Bar {
   button.vol-btn {
     background: transparent;
     border: none;
-    color: #89b4fa;
+    color: #fabd2f;
     font-size: 0.85em;
     padding: 0 4px;
     margin: 1px;
 
     &:hover {
-      color: #cdd6f4;
+      color: #ebdbb2;
     }
   }
 
   slider-icon {
-    color: #89b4fa;
+    color: #fabd2f;
     min-width: 20px;
   }
 
   slider-name {
-    color: #cba6f7;
+    color: #d3869b;
     font-weight: bold;
     font-size: 0.8em;
     letter-spacing: 0.08rem;
@@ -115,15 +115,15 @@ window.Bar {
   }
 
   slider-bar {
-    color: #a6e3a1;
+    color: #b8bb26;
     font-family: "Liga SFMono Nerd Font";
   }
 }
 
 window.CommandPalette {
-  background: #1e1e2e;
-  border-top: 1px solid #313244;
-  color: #cdd6f4;
+  background: #282828;
+  border-top: 1px solid #3c3836;
+  color: #ebdbb2;
   font-family: "Liga SFMono Nerd Font";
   font-size: 0.9em;
 

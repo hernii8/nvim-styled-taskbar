@@ -28,6 +28,8 @@ async function refresh(): Promise<void> {
   await refreshBrightness();
 }
 
+let hideTimer: ReturnType<typeof setTimeout> | null = null;
+
 export async function adjustSlider(delta: 1 | -1) {
   await refresh();
   const v = Math.max(0, Math.min(100, sliderValue.peek() + (SLIDER_STEP * delta)));
@@ -37,7 +39,11 @@ export async function adjustSlider(delta: 1 | -1) {
   } else {
     execAsync(`brightnessctl set ${v}%`).catch(() => { });
   }
-  setTimeout(() => setSliderTarget("none"), 1500);
+  if (hideTimer !== null) clearTimeout(hideTimer);
+  hideTimer = setTimeout(() => {
+    hideTimer = null;
+    setSliderTarget("none");
+  }, 1500);
 }
 
 export default function SliderWidget() {
